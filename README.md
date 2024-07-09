@@ -8,7 +8,7 @@ The following prior knowledge will greatly facilitate your learning path. Howeve
 
 * Basic command of the `Unix` console: If you want to learn the basics, we recommend this three-hour Software Carpentry course: [The Unix Shell](https://swcarpentry.github.io/shell-novice/)
 * Transport Phenomena or Fluid Mechanics + Heat/Mass Transfer at undergraduate level
-* Basic fundamentals of numerical methods: you can access to an excellent reference material on numerical methods at [Imperial College ESE - Primer Computational Mathematics](https://primer-computational). Additionally, if you are a spanish speaker and want to learn basic algorithms to solve initial value problems, boundary value problems, and initial and boundary value problems in the context of Transport Phenomena, we recommend the free MOOC [Transferencia de calor, masa y momentum computacional.](https://www.coursera.org/learn/transferencia-de-momentum-calor-y-masa-computacional).
+* Basic fundamentals of numerical methods: you can access to an excellent reference material on numerical methods at [Imperial College ESE - Primer Computational Mathematics](https://primer-computational-mathematics.github.io/book/c_mathematics/numerical_methods/intro.html). Additionally, if you are a spanish speaker and want to learn basic algorithms to solve initial value problems, boundary value problems, and initial and boundary value problems in the context of Transport Phenomena, we recommend the free MOOC [Transferencia de calor, masa y momentum computacional.](https://www.coursera.org/learn/transferencia-de-momentum-calor-y-masa-computacional).
 
 #### Computational Requirements
 The following computational requirements are **absolutely necessary** to start the workshop.
