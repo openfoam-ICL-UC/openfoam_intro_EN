@@ -15,10 +15,10 @@ The following computational requirements are **absolutely necessary** to start t
 At the beginning of the workshop, it is necessary to install the following software:
 
 * OpenFOAM v2406: [Installation instructions]()
-* If your OS is Windows, Windows Subsystem for Linux 2 (WSL 2): [Installation instructions](https://github.com/openfoam-ICL-UC/openfoam_intro_ES/wiki/Instalaci%C3%B3n-de-OpenFOAM)
-* If your OS is macOS, pre-compiled version of OpenFOAM in Docker container: [Installation instructions](https://github.com/openfoam-ICL-UC/openfoam_intro_ES/wiki/Instalaci%C3%B3n-de-OpenFOAM)
+* If your OS is Windows, Windows Subsystem for Linux 2 (WSL 2): [Installation instructions](https://github.com/openfoam-ICL-UC/openfoam_intro_EN/wiki/OpenFOAM-Installation-%E2%80%90-Windows)
+* If your OS is macOS, pre-compiled version of OpenFOAM in Docker container: [Installation instructions](https://github.com/openfoam-ICL-UC/openfoam_intro_EN/wiki/OpenFOAM-Installation-%E2%80%90-Windows)
 * If your OS is Linux, there is no need to install virtual machines or Docker.
-* ParaView > 5.0: It should be installed on Windows Subsystem for Linux or macOS or Linux: [Installation instructions](https://github.com/openfoam-ICL-UC/openfoam_intro_ES/wiki/Instalaci%C3%B3n-de-OpenFOAM)
+* ParaView > 5.0: It should be installed on Windows Subsystem for Linux or macOS or Linux: [Installation instructions](https://github.com/openfoam-ICL-UC/openfoam_intro_EN/wiki/OpenFOAM-Installation-%E2%80%90-Windows)
 
 This workshop is structured in two days, with two taught parts in the morning and one workshop at the afternoon. The learning objectives of each part of this workshop are:
 
