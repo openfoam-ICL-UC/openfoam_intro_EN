@@ -52,7 +52,7 @@ This workshop is structured in two days, with two taught parts in the morning an
 2. Adapt the tutorial for icoReactingMultiphaseInterFoam to simulate the evaporation of ethanol during the preparation of a simplified Mulled Wine.
 3. Postprocess the results using ParaView and the command line to suggest simplifying assumptions for reduced order models.
 
-The documentation associated with each session can be found in [Wikis](https://github.com/openfoam-ICL-UC/openfoam_intro_ES/wiki)
+The documentation associated with each session can be found in [Wikis](https://github.com/openfoam-ICL-UC/openfoam_intro_EN/wiki)
 
 ## Authors:
 Catalina Pino Muñoz, Research Associate, Earth Science and Engineering Department, Imperial College London
