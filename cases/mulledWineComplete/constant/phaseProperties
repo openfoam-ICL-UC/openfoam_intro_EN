@@ -44,7 +44,7 @@ massTransferModel
         type            Lee;
         species         vapour.gas;
         C               100;
-        Tactivate       366;
+        Tactivate       373;
     }
 );
 
