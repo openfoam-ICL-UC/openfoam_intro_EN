@@ -33,22 +33,12 @@ boundaryField
         value           $internalField;
     }
 
-    left
+    walls
     {
         type            kqRWallFunction;
         value           $internalField;
     }
 
-    right
-    {
-        type            kqRWallFunction;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
-    }
 }
 
 

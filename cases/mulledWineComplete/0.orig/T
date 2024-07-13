@@ -16,7 +16,7 @@ FoamFile
 
 dimensions          [0 0 0 1 0 0 0];
 
-internalField       uniform 360;
+internalField       uniform 372.99; //360;
 
 boundaryField
 {
@@ -24,7 +24,9 @@ boundaryField
     bottom
     {
         type            fixedValue;
-        value           uniform 383;
+        value           uniform 374; //383;
+        //type            externalWallHeatFluxTemperature;
+        //mode            flux;
     }
     top
     {

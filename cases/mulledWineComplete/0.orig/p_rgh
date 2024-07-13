@@ -33,22 +33,12 @@ boundaryField
         value           uniform 101325;
     }
 
-    left
+    walls
     {
         type            fixedFluxPressure;
         value           $internalField;
     }
 
-    right
-    {
-        type            fixedFluxPressure;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
-    }
 }
 
 
