@@ -243,7 +243,7 @@ patches
         btQuad(r3, r2)
     )
     
-    patch bottom
+    wall bottom
     (
         bottomQuad(s3, s0, s1, s2)
         bottomQuad(s3, r3, r0, s0)
