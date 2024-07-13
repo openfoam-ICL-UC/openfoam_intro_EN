@@ -68,7 +68,7 @@ Perform `m4 blockMeshDict.m4 > blockMeshDict", then execute blockMesh from the r
 - Bottom: set a superheat ot 10ºC with respect to the boiling temperature of water. This corresponds to 383.15 K.
 - Walls: in reality the surrounding air will be cooling the saucepan. For an initial approximation, this effect will be neglected and a zeroGradient boundary condition will be set.
 - U: set bottom and walls as noSlip, and otp as pressureInletOutletVelocity.
-
+- vapour.gas: Set bottom and walls boundaries as zeroGradient, and top as inletOutlet.
 
 ### constant
 - Set ethanol-water mixture
