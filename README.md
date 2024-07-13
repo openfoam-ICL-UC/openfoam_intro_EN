@@ -57,6 +57,6 @@ The documentation associated with each session can be found in [Wikis](https://g
 ## Authors:
 Catalina Pino Muñoz, Research Associate, Earth Science and Engineering Department, Imperial College London
 
-Felipe Huerta, Professor, Department of Chemical and Bioprocess Engineering, Pontificia Universidad Católica de Chile
+Felipe Huerta, Assistant Professor, Department of Chemical and Bioprocess Engineering, Pontificia Universidad Católica de Chile
 
 July, 2024.
