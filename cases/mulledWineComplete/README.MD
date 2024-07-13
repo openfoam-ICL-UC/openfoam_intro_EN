@@ -27,8 +27,7 @@ We will assume an initial temperature of the liquid mixture of 80ºC. This choic
 
 To produce an accurate simulation, we will consider a small saucepan. We will consider the standard of [stellar.co.uk](https://stellar.co.uk/knowledge-base/what-are-the-full-dimensions-of-the-pans):
 
-$$ d_i = 0.118 m $$
-$$ h = 0.12 m$$
+$$ d_i = 0.118 \hspace{0.1cm} \text{m}, H = 0.12 \hspace{0.1cm} \text{m} $$
 
 Note that for these dimensions, we just used the base diameter. In reality, a saucepan diameter is larger than the base diameter and it has a small curvature near the base. This would require a complex geometry that will go beyond the scope of this exercise.
 
