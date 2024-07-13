@@ -20,11 +20,12 @@ internalField       uniform 360;
 
 boundaryField
 {
+
     bottom
     {
-        type            zeroGradient;
+        type            fixedValue;
+        value           uniform 383;
     }
-
     top
     {
         type            inletOutlet;
@@ -32,21 +33,9 @@ boundaryField
         value           $internalField;
     }
 
-    left
-    {
-        type            fixedValue;
-        value           uniform 375;
-    }
-
-    right
+    walls
     {
         type            zeroGradient;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
     }
 }
 

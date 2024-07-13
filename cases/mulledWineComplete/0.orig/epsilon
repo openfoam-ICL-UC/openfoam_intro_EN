@@ -33,22 +33,12 @@ boundaryField
         value           $internalField;
     }
 
-    left
+    walls
     {
         type            epsilonWallFunction;
         value           $internalField;
     }
 
-    right
-    {
-        type            epsilonWallFunction;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
-    }
 }
 
 

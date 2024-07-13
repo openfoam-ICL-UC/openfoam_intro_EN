@@ -32,21 +32,10 @@ boundaryField
         value           $internalField;
     }
 
-    left
+    walls
     {
         type            nutkWallFunction;
         value           $internalField;
-    }
-
-    right
-    {
-        type            nutkWallFunction;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
     }
 }
 

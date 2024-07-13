@@ -22,8 +22,7 @@ boundaryField
 {
     bottom
     {
-        type        fixedValue;
-        value       $internalField;
+        type        noSlip;
     }
 
     top
@@ -32,21 +31,11 @@ boundaryField
         value       uniform (0 0 0);
     }
 
-    left
+    walls
     {
-        type        fixedValue;
-        value       $internalField;
-    }
-
-    right
-    {
-        type        fixedValue;
-        value       $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
+        type        noSlip;
+        //type        fixedValue;
+        //value       $internalField;
     }
 }
 

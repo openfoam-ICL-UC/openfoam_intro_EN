@@ -32,21 +32,10 @@ boundaryField
         value           $internalField;
     }
 
-    left
+    walls
     {
         type            calculated;
         value           $internalField;
-    }
-
-    right
-    {
-        type            calculated;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
     }
 }
 

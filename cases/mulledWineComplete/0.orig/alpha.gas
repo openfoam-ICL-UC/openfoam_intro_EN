@@ -32,19 +32,9 @@ boundaryField
         value           uniform 1;
     }
 
-    left
+    walls
     {
         type            zeroGradient;
-    }
-
-    right
-    {
-        type            zeroGradient;
-    }
-
-    frontAndBack
-    {
-        type            empty;
     }
 }
 
