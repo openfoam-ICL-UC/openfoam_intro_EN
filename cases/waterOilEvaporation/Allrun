@@ -9,6 +9,10 @@ runApplication blockMesh
 
 runApplication setFields
 
-runApplication $(getApplication)
+# runApplication $(getApplication)
+
+decomposePar
+
+mpirun -np 4 $(getApplication) -parallel > sim.log
 
 #------------------------------------------------------------------------------
