@@ -1,0 +1,19 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+runApplication blockMesh | tee -a log.blockMesh
+
+#\cp 0/T.orig 0/T
+
+#runApplication setFields | tee -a log.setFields
+decomposePar | tee -a log.decomposePar
+
+#runApplication $(getApplication)
+mpirun -np 16 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
+
+reconstructPar -constant | tee -a log.resconstructPar
+
+rm -rf processor*
+#------------------------------------------------------------------------------
