@@ -11,7 +11,7 @@ runApplication blockMesh | tee -a log.blockMesh
 decomposePar | tee -a log.decomposePar
 
 #runApplication $(getApplication)
-mpirun -np 16 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
+mpirun -np 4 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
 
 reconstructPar -constant | tee -a log.resconstructPar
 

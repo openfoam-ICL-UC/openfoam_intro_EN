@@ -46,7 +46,7 @@ boundaryField
         refGradient     uniform 1333;
 
         // Aproximación utilizando conductividad
-        // térmica turbulenta igual a 0.9 W/mK
+        // térmica turbulenta igual a 0.0071 W/mK
         // f = 1/(1+k_turb/delta/h), delta: face-center to cell-center distance
         valueFraction   uniform 0.01369;
     }
