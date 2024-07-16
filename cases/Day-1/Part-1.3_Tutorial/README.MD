@@ -72,11 +72,9 @@ Therefore, we are in a laminar regime.
 
 ## Numerical model
 
-Lets consider the conservation equation to solve for momentum, mass and energy
+Now that you have developed the physical model, we will setup the numerical model in OpenFOAM. This will consider the conservation equation to solve for momentum, mass and energy. We will not cover the details of each one of this equations, but you can consult any book in transport phenomena for this like [Add Ref].
 
-[Add queation]
-
-We require two boundary conditions cases:
+We will considered two boundary conditions cases for the heater surface:
 
 - Dirichlet condition for temperature of $T^\star = 400$ K at the heater wall, try with [fixedValue](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-fixed-value.html)
 
@@ -101,6 +99,20 @@ Define all the vertices and use them to define each one of the three cuboids in 
 You can consult details of this [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility) utility in te OpenFOAM website.
 
 ### 0 Directory
+
+Since our simulation uses a laminar flow regime. We only need to set up initial and boundary conditions for:
+- p: set the pressure internalField equal to zero, p = 0 Pa, and leave all other boundary conditions as calculated.
+- p_rgh: set the pressure minus the hydrostatic head to internalField equal to zero, p = 0 Pa. Set the boundary conditions at all the channel walls as fixedFluxPressure, whih will calculate the presion based on the velocity boundary condition.
+- T: set the internal field (initial condition) to 293 K, which is equivalent to 20ºC. For the boundaries we will consider:
+    - inlet: set the temperature to 293 K
+    - outlet and insulated walls: use a zeroGradient boundary condition. In the case of inslated walls this means that no heat flux is present, and in the case of the outlet this means and open boundary.
+    - heater: for the absorber plate we will considered two cases:
+        - case 1, Dirichlet: Set the heater wall to a fixedValue of 400 K
+        - case 2, Robin: Set the heater wall to a mixed boundary condition and set the values for the refValue as the surrundings temperature (300 K), the refGradient as $q/k$ and the valueFraction as $f = 1 / (1 + k/(h \delta))$
+- U: set the internal field (initial condition) to 0.5 m s $^{-1}$. For the boundaries we will consider:
+    - inlet: set the velocity to a fixedValue of 0.5 m s $^{-1}$.
+    - outlet: consider it as open flow with zeroGradient.
+    - other boundaries: set all other channels walls as as noSlip.
 
 
 ### constant
