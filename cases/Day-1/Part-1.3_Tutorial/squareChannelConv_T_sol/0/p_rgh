@@ -22,13 +22,16 @@ boundaryField
 {
     inlet
     {
-        // The presion BC is calculated based on the velocity BCcd
+        // The pressure BC is calculated based on the velocity BCcd
         type            fixedFluxPressure;
+        gradient        uniform 0;
+        value           uniform 0;
     }
 
     outlet
     {
-        type            fixedFluxPressure;
+        type            fixedValue;
+        value           uniform 0;
     }
 
     bottom

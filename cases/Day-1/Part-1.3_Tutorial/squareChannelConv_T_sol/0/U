@@ -29,7 +29,7 @@ boundaryField
 
     outlet
     {
-        // open flow at oulet which is given by a zero velocity gradient
+        // open flow at outlet which is given by a zero velocity gradient
         type            zeroGradient;
     }
 

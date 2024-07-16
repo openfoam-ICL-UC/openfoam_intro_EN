@@ -18,7 +18,7 @@ scale   0.001;// scales to mm
 
 vertices
 (
-    //square channle
+    //square channel
     (0 0 0) // 0
     (2 0 0) // 1
     (2 2 0) // 2
@@ -41,8 +41,13 @@ vertices
 
 blocks
 (
+    // Block from 0 < z < 6 mm
     hex (0 1 2 3 8 9 10 11) (20 20 30) simpleGrading (1 1 1)
+
+    // Block from 6 < z < 24 mm, heater section
     hex (8 9 10 11 12 13 14 15) (20 20 90) simpleGrading (1 1 1)
+
+    // Block from 24 < z < 30 mm, heater section    
     hex (12 13 14 15 4 5 6 7) (20 20 30) simpleGrading (1 1 1)
 );
 
