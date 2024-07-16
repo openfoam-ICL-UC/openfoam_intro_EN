@@ -1,0 +1,35 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Generate the computational grid
+# Note: it is necessary to first create the system/blockMeshDict file
+# The repository includes a default pipe.
+
+# If you want to modify the dimensions of the pipe, you need to
+# modify the blockMeshDict.m4 file located in the system folder
+# and then from the system folder run
+
+# Create the mesh
+m4 system/blockMeshDict.m4 > system/blockMeshDict
+
+# Afterwards, run blockMesh from the root directory of the case
+runApplication blockMesh
+
+# Decompose the domain in the axial direction in 4 subdomains
+decomposePar
+
+# Run the application specified in system/controlDict in parallel
+mpirun -np 4 $(getApplication) -parallel > sim.log
+
+# Reconstruct case directories
+reconstructPar
+
+# Remove processors
+rm -r proc*
+
+# Alternative: run the case in a single core (slower)
+# runApplication $(getApplication)
+
+#------------------------------------------------------------------------------
