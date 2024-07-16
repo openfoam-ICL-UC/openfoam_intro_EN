@@ -1,5 +1,5 @@
-# Solar air heater
-Day 1: Part 1.3 Tutorial - Solution
+# Square channel in a solar air heater
+*Day 1: Part 1.3 Tutorial - Solution*
 
 You are expected to modify a hot Room case from OpenFOAM to model a square channel in a solar air heater device.
 
@@ -8,6 +8,8 @@ This folder contains the solution for two cases:
  2. squareChannelConv_Robin_constantFlux_sol: Robin boundary condition to implement constant heat flux
 
 We encourage you to try to develop the tutorial on your own and make use of this cases as supporting material if needed.
+
+You can use the tubeConv case we review in Part-1.2 as a reference as well.
 
 ## Set up a new case folder
 
@@ -37,10 +39,11 @@ We will considered a single square channel section with a height of 2 mm, width 
 ### How is the air being heated? 
 Part of the top wall of the square channel is made of an absorbent material that upon receiving solar power will tranfer the heat to the air flowing at a given velocity below this plate. This will provide a fixed heat flux of approximately 1300 W/m2 of solar power, but as a first case, we will considered setting up a case with a constant temperature $T^\star$ (Dirichlet boundary condition) at the heater surface (absorbent material) and after this we will modify the boundary condition to a constant heat flux. 
 
-We will consider the following assumptions:
+We will consider the following simplifications and assumptions:
 - The energy conversion efficiency of tha absorber plate is assumed to be equal to 100%. 
 - The absorber plate zone is assumed to be rectangular, covering the a centered portion of the length of the channel top wall.
-- All other channel walls are insulated, nd not heat flux is present.
+- All other channel walls are insulated, and not heat flux is present.
+- Tha channel 
 
 Identify the relevant heater boundary and consider it as separately from the rest of the domain before building your geometry and mesh. 
 
@@ -216,20 +219,243 @@ You can the [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh
 
 Since our simulation uses a laminar flow regime. We only need to set up initial and boundary conditions for:
 - p: set the pressure internalField equal to zero, p = 0 m $^2$ s $^{-2}$ (pressure over density for incompressible case), and leave all other boundary conditions as calculated.
+```
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    outlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    bottom
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    heater
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    top
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    front
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    back
+    {
+        type            calculated;
+        value           $internalField;
+    }
+}
+```
 - p_rgh: set the pressure minus the hydrostatic head to internalField equal to zero, p = 0 m $^2$ s $^{-2}$. Set the boundary conditions to:
     - inlet: as fixedFluxPressure with a gradient and value equal to zero.
     - outlet: set to a fixedValue of zero.
     - Other walls: set to fixedFluxPressure to be calculate based on the velocity boundary condition.
+```
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedFluxPressure;
+        gradient        uniform 0;
+        value           uniform 0;
+    }
+
+    outlet
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+
+    bottom
+    {
+        type            fixedFluxPressure;
+    }
+
+    heater
+    {
+        type            fixedFluxPressure;
+    }
+
+    top
+    {
+        type            fixedFluxPressure;
+    }
+
+    front
+    {
+        type            fixedFluxPressure;
+    }
+
+    back
+    {
+        type            fixedFluxPressure;
+    }
+}
+```
+
 - T: set the internal field (initial condition) to 293 K, which is equivalent to 20ºC. For the boundaries we will consider:
     - inlet: set the temperature to 293 K
     - outlet and insulated walls: use a zeroGradient boundary condition. In the case of inslated walls this means that no heat flux is present, and in the case of the outlet this means and open boundary.
     - heater: for the absorber plate we will considered two cases:
         - case 1, Dirichlet: Set the heater wall to a fixedValue of 304 K
+        ```
+        internalField   uniform 293;
+
+        boundaryField
+        {
+            inlet
+            {
+                type            fixedValue;
+                value           uniform 293;
+            }
+            outlet
+            {
+                type            zeroGradient;
+            }
+            bottom
+            {
+                type            zeroGradient;
+            }
+            heater
+            {
+                type            fixedValue;
+                value           uniform 304;
+            }
+            top
+            {
+                type            zeroGradient;
+            }
+            front
+            {
+                type            zeroGradient;
+            }
+            back
+            {
+                type            zeroGradient;
+            }
+        }
+        ```
         - case 2, Robin: Set the heater wall to a mixed boundary condition and set the values for the refValue as the surrundings temperature (300 K), the refGradient as $q/k$ and the valueFraction as $f = 1 / (1 + k/(h \delta))$
+        ```
+        internalField   uniform 293;
+
+        boundaryField
+        {
+            inlet
+            {
+                type            fixedValue;
+                value           uniform 293;
+            }
+            outlet
+            {
+                type            zeroGradient;
+            }
+            bottom
+            {
+                type            zeroGradient;
+            }
+            heater
+            {
+                type            mixed;
+
+                // reference value: surrounding temperature
+                refValue        uniform 300;
+
+                // reference gradient = q/k = 1300 [W/m2] / 0.02514 [W/m/K]
+                refGradient     uniform 51710;
+
+                // Approximtion using a turbulent thermal conductivity of 0.0071 W/mK
+                // f = 1/(1+k_total/delta/h), but in laminar regime k_total ~ k
+                // delta: half of face-center to cell-center distance [m]
+                // h: heat transfer coefficient [W/m2-K] for convective heat transfer from the surroundings to the wall
+                valueFraction   uniform 0.3321;
+            }
+            top
+            {
+                type            zeroGradient;
+            }
+            front
+            {
+                type            zeroGradient;
+            }
+            back
+            {
+                type            zeroGradient;
+            }
+        }
+        ```
 - U: set the internal field (initial condition) to 0.5 m s $^{-1}$. For the boundaries we will consider:
     - inlet: set the velocity to a fixedValue of 0.5 m s $^{-1}$.
     - outlet: consider it as open flow with zeroGradient.
     - other boundaries: set all other channels walls as as noSlip.
+```
+internalField   uniform (0 0 0.5);
+
+boundaryField
+{
+    inlet
+    {
+        // fixed uniform fluid velocity at the inlet of 0.1 m/s
+        type            fixedValue;
+        value           uniform (0 0 0.5);
+    }
+
+    outlet
+    {
+        // open flow at outlet which is given by a zero velocity gradient
+        type            zeroGradient;
+    }
+
+    bottom
+    {
+        // 
+        type            noSlip;
+    }
+
+    heater
+    {
+        type            noSlip;
+    }
+
+    top
+    {
+        type            noSlip;
+    }
+
+    front
+    {
+        type            noSlip;
+    }
+
+    back
+    {
+        type            noSlip;
+    }
+}
+```
 
 ### constant
 
@@ -371,3 +597,117 @@ reconstructPar -constant | tee -a log.resconstructPar
 # Remove processor folders (if you reconstruct thesolution, no need to keep them)
 rm -rf proc*
 ```
+
+## Post-processing with Paraview
+
+### Plot over line for temperature and velocity profiles along the $z$-coordinate
+
+If you have not yet, create a dummy file in your case folder:
+
+`touch foam.foam`
+
+Launch ParaView and load foam.foam:
+
+`paraview foam.foam`
+
+After you launch ParaView, you will not see any geometry. Click on "Apply" on the left panel to see the square channel:
+
+![alt text](image.png)
+
+To add a `PlotOverLine` you can either do right click on `foam.foam` in the "Pipeline Browser", then select "Add Filter" and then select "PlotOverLine".
+
+Another option is to use the shortcut `Ctrl + tab` which launches a window where you can look for "Plot Over Line" and then hit "Enter".
+
+On the left panel "Properties" scroll down to "Line Parameters" and set the first and final points of a line through the center of the channel:
+- Point 1: (0.001, 0.001, 0)
+- Point 2: (0.001, 0.001, 0.03)
+
+Clink "Apply" and a second window will appear with several line plots, this is initially displaying all of the variables along the $z$-coordinate:
+
+![alt text](image-1.png)
+
+Click on top of the line plot to activate this layout, and on the left panel "Properties", scroll down to "Series Parameters", select and de-select all of the variables first. Then only select "T" and you will see the the line temperature plot.
+
+Click on the "Layout #1" window that is displaying the channel in 3-D and select from the variables on the top menu, "T".
+
+Use the "First frame" button [|<] on the top menu to go to the first time, and both windows will display the 3D temperature profile and the 1D line plot at 0.005 s.
+
+Then use the play button [>] to visualise the transient temperature profile.For the case with constant wall temperature you should see:
+
+![alt text](image-2.png)
+
+Modify the variables selected in both "Layout #1" to "U" and in the line plot to "U_Magnitude" to visualize the velocity profile along the center of the channel.
+
+Since we considered a nonSlip boundary condition in all channel walls, we can use a `Clip` to cut through the middle and observe the velocity profile. 
+
+First, click the `foam.foam` in the "Pipeline Browser". Then use `Ctrl + tab` and type "Clip", then hit Enter to slect a `Clip` filter. In the left panel "Properties" scroll down to "Plane Parameters" and select `X Normal`, deselect "Show Plane" and click "Apply".
+
+The profile that is shown is the pressure. Choose from the top menu variables "U" to see the velocity profile.
+
+![alt text](image-3.png)
+
+Velocity profile at 5e-3 s:
+![alt text](image-4.png)
+
+Velocity profile at 0.3 s:
+![alt text](image-5.png)
+
+You can repeat the same steps for the second simulation case that uses a constant power solar flux in the heater surface.
+
+It is also possible to compare side-by-side both simulation results by loading the two `foam.foam` files into ParaView. and using the filter `Transform` in one of them to translate it by -0.005 in the $y$-coordinate. Then you can compare the 3-D profiles and plot over lines, for example for the temperature of through the middle of the top channel wall:
+
+![alt text](image-6.png)
+
+### Mean outlet temperature over time
+
+To do this we will use again the filter `Clip`. 
+
+Add this filter to the `foam.foam` and select `Z Normal`. Then modify the Origin to (0.001, 0.001, 0.0299) and deselect "Show Plane" in the "Plane Parameters".
+
+Below the "Plane Parameters" in the left panel, deselect "Invert"
+
+Cick "Apply" and on the top menu slect "Surface with Edges" and click the icon "Rescale to Visible Data Range". You should see a single cell cross-sectional area of the channel: 
+
+![alt text](image-7.png)
+
+Select `Clip1` on the "Pipeline Browser", and add filter `IntegrateVariables`. On the left panel, select "Divide Cell Data By Volume" and clip "Apply".
+
+A new window will appear displaying a row with the integrated values. In the top menu of this windows in "Attribute" select "Cell data"
+
+Then select "IntegrateVariables1" on the "Pipeline Browser", and add the filter `Plot Data Over Time`. On the left panel select "Cells" for "Field Association" and click "Apply". An Additional widow will appear, initially showing all intrgrated variable values over time.
+
+Scroll down to the "Series Parameters" section, select and deselct all variables, and then select "T (stats)":
+
+![alt text](image-8.png)
+
+### Calculate the mean Nusselt number 
+
+To calculate the engineering quantity of interest, the Nusselt number, which gives the ratio between the total heat transfer (convection + conduction) to conductive heat transfer, we can consider:
+
+$$ Nu = \frac{h D_h}{k}$$
+
+$$ h (T - T_w) = - k \frac{\partial T}{\partial n}|_w$$
+
+$$ T = \frac{\int_A T u_z dA}{\int_A u_x dA}$$
+
+$$ Nu = \frac{h D_h}{k} = -\frac{\frac{\partial T}{\partial n}|_w}{(T(z) - T_w)/D_h}$$
+
+Therefore we need to evaluate the the mean temperature of the air $T$, the wall temperature $T_w$, and the temperature gradient at the wall $\frac{\partial T}{\partial n}|_w$. We will use ParaView.
+
+Load the case for with a constant heat flux on the heater into ParaView.
+
+![alt text](image-9.png)
+
+Mean temperature = 176.231 / 0.5957 = 295.85 K
+
+Wall temperature = 302 K
+
+Mean wall gradient = 5963.39 K/m
+
+$$ Nu = \frac{-5963.39}{(295.85-302)\times 0.002} \approx 1.94$$
+
+Typical values for laminar flows range between 1 and 10.
+
+With the geometry and conditions used here (for the purpose of a fast simulation test case) we get a small contribution due to convection while most of the heat is transfered by conduction. Modification to the top wall where the absorbent material is could be considered to increase tubulence in the region and increase the Nu number, for example.
+
+
