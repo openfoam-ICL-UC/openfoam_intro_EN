@@ -83,7 +83,7 @@ We will considered two boundary conditions cases for the heater surface:
 
 - Robin condition: constant solar heat flux ($q$), try with [Mixed](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-mixed.html)
 
-$$ -\vec{n}\cdot k \frac{\partial T}{\partial y}|_{y = H} = -h (T|_{y = H} - T_\infin) - q $$
+$$ -\vec{n}\cdot k \frac{\partial T}{\partial y}|_{y = H} = -h (T|_{y = H} - T_\infty) - q $$
 
 Check this [resource](https://www.cfdyna.com/Home/OpenFOAM/of_Tut_Web/of_convection-BC.pdf) for the general derivation of a convective heat transfer boundary condition with addition of a constant heat flux
 
