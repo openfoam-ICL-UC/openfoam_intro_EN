@@ -78,17 +78,27 @@ Lets consider the conservation equation to solve for momentum, mass and energy
 
 We require two boundary conditions cases:
 
-- Dirichlet condition for temperature of 400 K at the heater wall, try with [fixedValue](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-fixed-value.html)
+- Dirichlet condition for temperature of $T^\star = 400$ K at the heater wall, try with [fixedValue](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-fixed-value.html)
 
 - Robin condition: constant solar heat flux ($q$), try with [Mixed](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-mixed.html)
 
-$$ k \frac{\partial T}{\partial y}|_{y = H} = h (T|_{y = H} - T_\infin) + q$$
-
+$$ -\vec{n}\cdot k \frac{\partial T}{\partial y}|_{y = H} = -h (T|_{y = H} - T_\infin) - q$$
 
 Check this [resource](https://www.cfdyna.com/Home/OpenFOAM/of_Tut_Web/of_convection-BC.pdf) for the general derivation of a convective heat transfer boundary condition with addition of a constant heat flux
 
 ### Meshing
 
+We will use the blockMesh utility from OpenFOAM to build a simple mesh. Consider two blocks:
+1. A rectangular cuboid of $2\times 2\times 30$ mm
+2. A rectangular cuboid of $2\times 2\times 18$ mm
+
+This two geometrical domains will define 3 rectangular cuboid to be added in the dictionary `blockMeshDict`. One at the entrance before the heater section, one under the heater section, and one at the outlet after the heater section. We recommend that you draw the geometry in piece of paper first, recognising the three sections and their vertices. 
+
+Make sure to set an appropiate scale to be used to work in mm. 
+
+Define all the vertices and use them to define each one of the three cuboids in `blockMeshDict`. We will use a uniform mesh with spacing of $\Delta x = 0.1$ mm, $\Delta y = 0.1$ mm and $\Delta z = 0.2$ mm. Defne the number of cells accordingly to get these cell dimensions. 
+
+You can consult details of this [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility) utility in te OpenFOAM website.
 
 ### 0 Directory
 
