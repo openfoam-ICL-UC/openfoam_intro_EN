@@ -10,13 +10,13 @@ runApplication blockMesh | tee -a log.blockMesh
 decomposePar | tee -a log.decomposePar
 
 # Run solver either in single procesor or in n processors in parallel 
-#runApplication $(getApplication)
+# runApplication $(getApplication) # Use this line instead to run in sigle processor
 mpirun -np 4 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
 
 # Reconstruct solution (decomposed solution can also be load in paraview)
 reconstructPar -constant | tee -a log.resconstructPar
 
 # Remove processor folders (if you reconstruct thesolution, no need to keep them)
-rm -rf processor*
+rm -rf proc*
 
 #------------------------------------------------------------------------------
