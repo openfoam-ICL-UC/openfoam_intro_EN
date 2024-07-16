@@ -76,7 +76,7 @@ Now that you have developed the physical model, we will setup the numerical mode
 
 We will considered two boundary conditions cases for the heater surface:
 
-- Dirichlet condition for temperature of $T^\star = 400$ K at the heater wall, try with [fixedValue](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-fixed-value.html)
+- Dirichlet condition for temperature of $T^\star = 304$ K at the heater wall, try with [fixedValue](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-fixed-value.html)
 
 - Robin condition: constant solar heat flux ($q$), try with [Mixed](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-mixed.html)
 
@@ -92,31 +92,282 @@ We will use the blockMesh utility from OpenFOAM to build a simple mesh. Consider
 
 This two geometrical domains will define 3 rectangular cuboid to be added in the dictionary `blockMeshDict`. One at the entrance before the heater section, one under the heater section, and one at the outlet after the heater section. We recommend that you draw the geometry in piece of paper first, recognising the three sections and their vertices. 
 
-Make sure to set an appropiate scale to be used to work in mm. 
+Make sure to set an appropiate scale to be used to work in mm. Define all the vertices and use them to define each one of the three cuboids in `blockMeshDict`. We will use a uniform mesh with spacing of $\Delta x = 0.1$ mm, $\Delta y = 0.1$ mm and $\Delta z = 0.2$ mm. Defne the number of cells accordingly to get these cell dimensions. 
 
-Define all the vertices and use them to define each one of the three cuboids in `blockMeshDict`. We will use a uniform mesh with spacing of $\Delta x = 0.1$ mm, $\Delta y = 0.1$ mm and $\Delta z = 0.2$ mm. Defne the number of cells accordingly to get these cell dimensions. 
+```
+scale   0.001;// scales to mm 
 
-You can consult details of this [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility) utility in te OpenFOAM website.
+vertices
+(
+    // reactangular cuboid, full channel
+    (0 0 0) // 0
+    (2 0 0) // 1
+    (2 2 0) // 2
+    (0 2 0) // 3
+    (0 0 30) // 4
+    (2 0 30) // 5
+    (2 2 30) // 6
+    (0 2 30) // 7
+
+    // rectangular cuboid, heater section
+    (0 0 6) // 8
+    (2 0 6) // 9
+    (2 2 6) // 10
+    (0 2 6) // 11
+    (0 0 24) // 12
+    (2 0 24) // 13
+    (2 2 24) // 14
+    (0 2 24) // 15
+);
+
+blocks
+(
+    // Block from 0 < z < 6 mm, entrance section
+    hex (0 1 2 3 8 9 10 11) (20 20 30) simpleGrading (1 1 1)
+
+    // Block from 6 < z < 24 mm, heater section
+    hex (8 9 10 11 12 13 14 15) (20 20 90) simpleGrading (1 1 1)
+
+    // Block from 24 < z < 30 mm, outlet section    
+    hex (12 13 14 15 4 5 6 7) (20 20 30) simpleGrading (1 1 1)
+);
+```
+
+Define all channel boundaries using `patch` for the inlet and outlet and `wall` for all other boundaries.
+
+```
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 1 2 3)
+        );
+    }
+    
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (4 5 6 7)
+        );
+    }
+
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (0 1 9 8)
+            (8 9 13 12)
+            (12 13 5 4)
+        );
+    }
+
+    heater
+    {
+        type wall;
+        faces
+        (
+            (11 10 14 15)
+        );
+    }
+
+    top
+    {
+        type wall;
+        faces
+        (
+            (3 2 10 11)
+            (15 14 6 7)
+        );
+    }
+
+    front
+    {
+        type wall;
+        faces
+        (
+            (1 9 10 2)
+            (9 13 14 10)
+            (13 5 6 14)
+        );
+    }
+
+    back
+    {
+        type wall;
+        faces
+        (
+            (0 8 11 3)
+            (8 12 15 11)
+            (12 4 7 15)
+        );
+    }
+);
+```
+
+You can the [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility) utility documentation in te OpenFOAM website.
 
 ### 0 Directory
 
 Since our simulation uses a laminar flow regime. We only need to set up initial and boundary conditions for:
-- p: set the pressure internalField equal to zero, p = 0 Pa, and leave all other boundary conditions as calculated.
-- p_rgh: set the pressure minus the hydrostatic head to internalField equal to zero, p = 0 Pa. Set the boundary conditions at all the channel walls as fixedFluxPressure, whih will calculate the presion based on the velocity boundary condition.
+- p: set the pressure internalField equal to zero, p = 0 m $^2$ s $^{-2}$ (pressure over density for incompressible case), and leave all other boundary conditions as calculated.
+- p_rgh: set the pressure minus the hydrostatic head to internalField equal to zero, p = 0 m $^2$ s $^{-2}$. Set the boundary conditions to:
+    - inlet: as fixedFluxPressure with a gradient and value equal to zero.
+    - outlet: set to a fixedValue of zero.
+    - Other walls: set to fixedFluxPressure to be calculate based on the velocity boundary condition.
 - T: set the internal field (initial condition) to 293 K, which is equivalent to 20ºC. For the boundaries we will consider:
     - inlet: set the temperature to 293 K
     - outlet and insulated walls: use a zeroGradient boundary condition. In the case of inslated walls this means that no heat flux is present, and in the case of the outlet this means and open boundary.
     - heater: for the absorber plate we will considered two cases:
-        - case 1, Dirichlet: Set the heater wall to a fixedValue of 400 K
+        - case 1, Dirichlet: Set the heater wall to a fixedValue of 304 K
         - case 2, Robin: Set the heater wall to a mixed boundary condition and set the values for the refValue as the surrundings temperature (300 K), the refGradient as $q/k$ and the valueFraction as $f = 1 / (1 + k/(h \delta))$
 - U: set the internal field (initial condition) to 0.5 m s $^{-1}$. For the boundaries we will consider:
     - inlet: set the velocity to a fixedValue of 0.5 m s $^{-1}$.
     - outlet: consider it as open flow with zeroGradient.
     - other boundaries: set all other channels walls as as noSlip.
 
-
 ### constant
 
+#### g 
 
+Make sure the gravity value is correct and is pointing downwards in the $y$-coordinate
+```
+dimensions      [0 1 -2 0 0 0 0];
+value           (0 -9.81 0);
+```
+#### transportProperties
+We will use a incompressible Newtonian viscosity model.
+Modify the properties to use the values for air
+
+```
+transportModel Newtonian;
+
+// Laminar viscosity of air / Pa * s
+nu              15.16e-6; 
+
+// Thermal expansion coefficient / 1/K
+beta            3e-3; 
+
+// Reference temperature
+TRef            293; 
+
+// Laminar Prandtl number
+Pr              0.73;
+
+// Turbulent Prandtl number
+Prt             0.85;
+
+// Additional parameters
+
+// Thermal conductivity / W/m/K
+k               0.02514;
+
+// Convection coefficient / W / m^2 / K 
+h               25;   
+
+```
+
+#### turbulenceProperties
+Modify the dictionary to cnsider a laminar case
+
+```
+simulationType laminar;
+```
 ### system
 
+#### controlDict
+We will run the simulation for 0.3 s saving results each 0.01 s. Start with a
+small time step of 1e-7 s and allow for a adjustTimeStep and a maxCo of 0.75.
+
+```
+application     buoyantBoussinesqPimpleFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         3e-1;
+
+deltaT          1e-7;
+
+writeControl    adjustableRunTime;
+
+writeInterval   1e-2;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+adjustTimeStep  yes;
+
+maxCo           0.75;
+```
+
+### fvSchemes and fvSolution
+We will keep the same settings that we used in our previous example `tubeConv`. Copy the `fvSchemes` and `fvSolution` form that case to the system folder
+
+#### decomposePar
+
+```
+numberOfSubdomains 4;
+
+method          simple;
+
+coeffs
+{
+    n           (1 1 4);
+}
+```
+
+### Allclean
+Check the `Allclean` so that it deldetes time folder and processor folders
+
+```
+# Remove time folders, but not the 0 folder
+rm -r [0-9].*
+rm -r [1-9]*
+
+# remove processor folders
+rm -r proc*
+
+# Remove log files
+rm log.*
+````
+
+### Allrun
+Modify the `Allrun` to run in parallel in 4 processors
+
+```
+# Create mesh
+runApplication blockMesh | tee -a log.blockMesh
+
+# Decompose mesh in n number of processors
+decomposePar | tee -a log.decomposePar
+
+# Run solver either in single procesor or in n processors in parallel 
+# runApplication $(getApplication) # Use this line instead to run in sigle processor
+mpirun -np 4 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
+
+# Reconstruct solution (decomposed solution can also be load in paraview)
+reconstructPar -constant | tee -a log.resconstructPar
+
+# Remove processor folders (if you reconstruct thesolution, no need to keep them)
+rm -rf proc*
+```
