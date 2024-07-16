@@ -1,55 +1,74 @@
 # Solar air heater
-Day 1 tutorial - Solution
+Day 1: Part 1.3 Tutorial - Solution
 
-You are expected to adapt the hotRoom case to model a square channel in a solar air heater. 
-Start by making a copy of the hotRoom tutorial available in `tutorials/heatTransfer/buoyancyBousineqPimpleFoam` to this folder and change the folder name to `squareChannelConv_T`.
+You are expected to modify a hot Room case from OpenFOAM to model a square channel in a solar air heater device.
+
+This folder contains the solution for two cases:
+ 1. squareChannelConv_T_sol: Dirichlet boundary condition for temperature
+ 2. squareChannelConv_Robin_constantFlux_sol: Robin boundary condition to implement constant heat flux
+
+We encourage you to try to develop the tutorial on your own and make use of this cases as supporting material if needed.
+
+## Set up a new case folder
+
+Start by making a copy of the hotRoom tutorial available in "tutorials/heatTransfer/buoyantBoussinesqPimpleFoam" to this folder and change the folder name to "squareChannelConv_T".
+
+`cp -r $FOAM_TUTORIALS/heatTransfer/buoyantBoussinesqPimpleFoam/hotRoom .`
+
+`mv hotRoom/ squareChannelConv_T`
+
+`cd squareChannelConv_T/`
+
+Now your in your case folders and ready to start modifying the case.
 
 As you progress through the case, make sure you document your changes. A simple way to do this is to add comments to the code.
-For comments use // within the dictionaries and # whitin the Allrun and Allclean files, at the start of each comment line.
+For comments use  characters "//" within the OpenFOAM dictionaries and "#" within the Allrun and Allclean files, at the start of each line that you would like to comment.
 
 ## Case description
-Air is heated as it flows through an square channel within a solar heater device. The top surface of the channels is made of an absorber plate that absorbes solar radiation and transfers the heat to the air flowing throught the channels.
+Air is heated as it flows through an square channel within a solar heater device. In a portion of the top surface of the channels, an absorber plate absorbes solar radiation and transfers the heat to the air flowing throught the square channels below. You can find [examples](https://doi.org/10.1016/j.energy.2019.116437) of similar devices in the literature. Here, we will considered a smaller channel for the purpose of this tutorial, and to decrease the computation time.
+
+We will considered a single square channel section with a height of 2 mm, width of 2 mm an total length of 30 mm. Cool air enters the channel at a velocity of 0.5 m/s and heat up as it flows through the channel. The air is heated from the top channel wall with a constant solar power of 1300 W m $^{-2}$. It is of interest to develop a CFD model of this system to:
+- Visualise the velocity and temperature profile within the channels.
+- Calculate the mean temperature of the air leaving the channel as a function of time
+- Estimate engineering quantities of interest for the system (e.g., Nusselt number)
 
 ## Physical model
 
 ### How is the air being heated? 
-Part of the top wall of this square channel is made of an absorbent material that...
-
-The air will be heated by a section of the top channel wall. This will provide a fixed heat flux of approximately 1300 W/m2 of solar power, but as a first case we will start setting up the absorber plate at a constant temperature (Dirichlet boundary condition)
+Part of the top wall of the square channel is made of an absorbent material that upon receiving solar power will tranfer the heat to the air flowing at a given velocity below this plate. This will provide a fixed heat flux of approximately 1300 W/m2 of solar power, but as a first case, we will considered setting up a case with a constant temperature $T^\star$ (Dirichlet boundary condition) at the heater surface (absorbent material) and after this we will modify the boundary condition to a constant heat flux. 
 
 We will consider the following assumptions:
 - The energy conversion efficiency of tha absorber plate is assumed to be equal to 100%. 
-- The absorber plate zone is assumed to be rectangular, covering a portion of the length of the channel.
+- The absorber plate zone is assumed to be rectangular, covering the a centered portion of the length of the channel top wall.
+- All other channel walls are insulated, nd not heat flux is present.
 
-Identify the relevant boundary and consider it as separately from the rest of the domain before building your geometry and mesh. 
+Identify the relevant heater boundary and consider it as separately from the rest of the domain before building your geometry and mesh. 
 
 ### What would be the initial temperature?
 
-We will assume an initial temperature of the air inside the channel will be equal to the its inlet temperature of 20ºC to observed tha transient period during which is heated inside the channel.
+We will assume an initial temperature of the air inside the channel will be equal to the its inlet temperature, which is of 20ºC. This will allow us to observe the transient period during which the air is heated inside the channel until i reaches a steady state temperature profile.
 
 ### What will be the domain?
 
-To produce an accurate simulation and faster solving case, we will consider a small channel of dimension 2 x 2 x 30 [mm]. While the absorber plate has dimensions of 2 x 18 [mm] and it is centered in the top channel wall.
+To produce an accurate simulation and faster solving case, we will consider a small channel of dimension 2 x 2 x 30 mm $^{3}$. While the absorber plate has dimensions of 2 x 18 mm $^{2}$ and it is centered in the top channel wall.
 
-For simplifation we will not considered any curvature in the channel, so we will build the geometry using rectangular cuboids.
+For simplifation we will not considered any curvature in the channel, so we will build the geometry using rectangular cuboids and blockMesh.
 
 ### What is the temperature of the surroundings and temperature of the air at the inlet?
 
 We will assume that the temperature of the surroundings is 27ºC. which will represent a hot summer day.
 
-We will assume the air enters the channel at 20ºC. This is the temperature of the air when returnes at a lower temperature to the solar heater, after being used for an agricultural process for example.
+We will assume the air enters the channel at 20ºC. This is the temperature of the air when returnes to the solar heater device at a lower temperature, after being used for an agricultural process, for example.
 
 ### What is the inlet velocity of the cold air entering the square channel, and what regime do we expect?
 
-We will use a velocity of 0.5 m/s.
+We will considered slow velocity of 0.5 m/s. For this condition, estimate the Reynolds number, considering a density of air of 1.204 kg m $^{-3}$, a dynamic viscosity of 18.25 $\times$ 10 $^{-6}$ Pa s, and as characteristic length the hydraulic diameter of the square channel:
 
-Estimate the Reynolds number, considering a density of air of 1.204 kg/m3, a dynamic viscosity of  , and as characteirstic length the hydraulic diameter of the square channel
+$$ D_h = \frac{4\times A}{P} = 0.002$$
 
-$$ D_h = \frac{4\times Area}{Perimeter} = \frac{4\times (0.002\times 0.002)}{0.008} = $$
+$$ Re = \frac{\rho u_{in} D_h}{\mu} = \frac{1.204\times 0.5\times 0.002}{18.25e-6} = 65.97$$
 
-$$ Re = \frac{\rho u_{in} D_h}{\mu} = \frac{1.204\times 0.5\times 0.002}{} = $$
-
-The Re << 2300, therefore we are in a laminar regime.
+Therefore, we are in a laminar regime.
 
 ## Numerical model
 
@@ -57,57 +76,25 @@ Lets consider the conservation equation to solve for momentum, mass and energy
 
 [Add queation]
 
-We require to consider boundary conditions
+We require two boundary conditions cases:
 
-- Boundary condition: try with [externalWallHeatFluxTemperature](https://www.openfoam.com/documentation/guides/latest/api/classFoam_1_1externalWallHeatFluxTemperatureFvPatchScalarField.html#details)
+- Dirichlet condition for temperature of 400 K at the heater wall, try with [fixedValue](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-fixed-value.html)
+
+- Robin condition: constant solar heat flux ($q$), try with [Mixed](https://www.openfoam.com/documentation/guides/latest/doc/guide-bcs-mixed.html)
+
+$$ k \frac{\partial T}{\partial y}|_{y = H} = h (T|_{y = H} - T_\infin) + q$$
+
+
+Check this [resource](https://www.cfdyna.com/Home/OpenFOAM/of_Tut_Web/of_convection-BC.pdf) for the general derivation of a convective heat transfer boundary condition with addition of a constant heat flux
 
 ### Meshing
-We will build the mesh isung the blockMeshDict
 
-An efficient approach is to take the m4 file from day 1 that is a template to create cylindrical meshes. This file is hard coded, so it requires tuning and modification. A rule of thumb is to keep the proportions of the square side half, curvature and radius. The original values are 0.5:0.6:1. Rescaling to a radius of 0.059, we obtain 0.0295:0.0354:0.059. 
-
-- Modify the "inlet" boundary name to "bottom". This has the advantage to be located at a vertical coordinate is $z=0$, consistent with the bottom of the roof. It is important to change the constant/g file to have the gravity pointing downwards in the $z$ direction and not in the $y$ direction.
-
-Perform `m4 blockMeshDict.m4 > blockMeshDict", then execute blockMesh from the root case directory. This will create the new mesh.
 
 ### 0 Directory
-- Modify each field dictionary to include only the bottom, top and walls dictionary.
 
-- air.gas: assume that the vapour phase is air.
-- alpha.gas: the boundary condition at the top is pure air. The phase fraction in the rest of the tank will be set to zero and modified later with setFields.
-- alpha.liquid assume internalField uniform 1 everywhere, and a boundary condition of 0 at the top.
-- alphat: set walls with the original values of alphatWallFunction, and top with calculated.
-- epsilon: set walls with the default wall function and top with inletOutlet.
-- k: set the turbulent kinetic energy at the walls with the default wall function and top with inletOutlet.
-- nut: set the rate of change of turbulent viscosity as the default wall function at the walls and bottom, and calculated at the top.
-- p: set the pressure internalField equal to the atmospheric pressure, p = 101325 Pa, and leave all other boundary conditions as calculated.
-- p_rgh: set the pressure minus the hydrostatic head to internalField equal to the atmospheric pressure, p = 101325 Pa. Set the boundary conditions at the walls and bottom as fixedFluxPressure. Set the boundary condition at the tnak top as totalPressure. as this tends to give more stability to the simulation.
-- T: Set the internal field (initial condition) to 353.15, which is equivalent to 80ºC. The boundary conditions are more complex:
-- Bottom: set a superheat ot 10ºC with respect to the boiling temperature of water. This corresponds to 383.15 K.
-- Walls: in reality the surrounding air will be cooling the saucepan. For an initial approximation, this effect will be neglected and a zeroGradient boundary condition will be set.
-- U: set bottom and walls as noSlip, and otp as pressureInletOutletVelocity.
-- vapour.gas: Set bottom and walls boundaries as zeroGradient, and top as inletOutlet.
 
 ### constant
-- Set ethanol-water mixture
+
 
 ### system
 
-#### setFieldsDict
-Modify the default dictionary to set a liquid filling equal to 75% of the height of the cylinder:
-
-
-```
-regions
-(
-    boxToCell
-    {
-        box (0 0 0) (1 1 0.09);
-        fieldValues
-        (
-            volScalarFieldValue alpha.liquid 1
-            volScalarFieldValue alpha.gas    0
-        );
-    }
-);
-```
