@@ -40,4 +40,10 @@ k               0.02514;
 // Convection coefficient / W / m^2 / K 
 h               25;   
 
+<<<<<<< Updated upstream
+=======
+// Surroundings temperature / K
+T_inf           300;
+
+>>>>>>> Stashed changes
 // ************************************************************************* //
