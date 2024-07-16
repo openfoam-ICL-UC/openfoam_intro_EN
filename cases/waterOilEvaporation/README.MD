@@ -1,21 +1,26 @@
-# Multicomponent evaporation of mulled wine
+# Evaporation of stratified water-oil mixture
 Day 2 tutorial - Solution
 
-You are expected to adapt the multicomponent evaporation case to alcohol evaporation during the preparation of Mulled Wine. This folder has exactly the same files as the tutorial available in `tutorials/multiphase/icoReactingMultiphaseInterFoam`.
-
-As you progress through the case, make sure you document your changes. This can be easier creating your own fork of the repository in GitHub. If you are not sure how to do this, do not worry, just add comments to the code.
+You are expected to adapt the multicomponent evaporation case to the evaporation of a stratified water-oil mixture un a saucepan. This folder has exactly the same files as the tutorial available in `tutorials/multiphase/icoReactingMultiphaseInterFoam`. As you progress through the case, make sure you document your changes. This can be easier creating your own fork of the repository in GitHub. If you are not sure how to do this, do not worry, just add comments to the code.
 
 ## Case description
-Mulled wine can be modelled as an ethanol-water mixture. Assume that the wine has a 14% V/V concentration of ethanol. This corresponds to an ethanol mass fraction of approximately 0.109. 
+Consider a cylindrical saucepan with internal diameter $d_i = 0.118$ m and height $H=0.12$ m. The system is filled to 50% of its capacity with water. On top of the liquid layer, a canola oil layer is located that uses 25% of the volume of the saucepan. The saucepan is heated from the bottom at a low power, with a flux equal to $q = 10185.9$ W m $^{-2}$. It is of interest to develop a CFD model for this system with the following objectives:
+
+- Visualise the boiling dynamics in terms of velocity,  volume fraction and temperature fields.
+- Calculate the flowrate of water that leaves the saucepan as a function of time.
 
 ## Physical model
 
-### How is the wine being heated? 
-The wine will be heated by the base through a modern electric hub. This will provide a fixed heat flux prescribed from realistic values and geometry. For the purpose of scaling, we will consider the [Kogan Induction Cooktop](https://www.kogan.com/au/buy/kogan-induction-cooktop/?utm_source=google&utm_medium=product_listing_ads&gad_source=1&gclid=EAIaIQobChMIi7vvlPWihwMV9aJmAh0YZgdREAQYASABEgLgd_D_BwE). The power of the four cooking zone is 7200 W. Each cooking zone has a diameter of 15 cm. We will consider the following assumptions:
-- The energy conversion efficiency from electric power to heat is assumed to be equal to 100%. 
-- The cooking zone is assumed to be a circle, and the totality of the area is active for heating.
+### How is the saucepan being heated? 
+The saucepan will be heated by the base through a modern electric hub. This will provide a fixed heat flux prescribed from realistic values and geometry. For the purpose of scaling, we will consider the [Kogan Induction Cooktop](https://www.kogan.com/au/buy/kogan-induction-cooktop/?utm_source=google&utm_medium=product_listing_ads&gad_source=1&gclid=EAIaIQobChMIi7vvlPWihwMV9aJmAh0YZgdREAQYASABEgLgd_D_BwE). The power of the four cooking zone is 7200 W. Each cooking zone has a diameter of 11.8 cm. We will consider the following assumptions:
+- The energy conversion efficiency from electric power to heat is assumed to be equal to 100%.
+- The heating power corresponds to 10% of the nominal power of the cooktop. The nominal power of the cooktop is calculated through dividing the power that one heater uses over the area of the heater:
 
 $$ \dot{q} = \frac{\dot{Q}}{A} = \frac{(7200/4) \text{W}}{\pi (0.15m)^2/4} = 101.859 \hspace{0.1cm} \text{kW}/\text{m}^2$$
+
+- The cooking zone is assumed to be a circle, and the totality of the area is active for heating.
+- The saucepan walls are thermally insulated
+
 
 Identify the relevant boundary and consider it as separately from the rest of the domain before building your geometry and mesh. 
 
@@ -37,7 +42,9 @@ We will assume that the temperature of the surroundings is 18ºC, which is the U
 
 ### Will you consider the humidity?
 
-We will consider a internal humidity of the house of 40%. This corresponds to the average value of a well-heated, well-insulated house. 
+As we expect the onset of nucleate boiling, the main driver of the evaporation will be the heat influx. This will be much higher than the water concentration gradient. Therefire, it is safe to assume that the air is dry as this won't affect significantly the evaporation rate. 
+
+Just for reference, the internal humidity of the house of 40%. This corresponds to the average value of a well-heated, well-insulated house. 
 
 ## Numerical model
 
@@ -71,7 +78,156 @@ Perform `m4 blockMeshDict.m4 > blockMeshDict", then execute blockMesh from the r
 - vapour.gas: Set bottom and walls boundaries as zeroGradient, and top as inletOutlet.
 
 ### constant
-- Set ethanol-water mixture
+
+#### thermophysicalProperties.gas
+Directly reuse the file from session 2.2, as in the simulation it will be assumed that no oil evaporates. If oil would evaporate, the thermophysical properties of the oil vapour must be added.
+ 
+#### thermophysicalProperties.liquid
+It is important to update hte Prandtl number, viscosity, and Prandtl number. A reference kappa (thermal conductivity) is included but OpenFOAM calculates it as $k = \mu c_p/Pr $.
+
+
+```
+thermoType
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState rhoConst;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+mixture
+{
+    specie
+    {
+        nMoles          1;
+        molWeight       18.9;
+    }
+    equationOfState
+    {
+        rho             1000;
+    }
+    thermodynamics
+    {
+        Cp              4181;
+        Hf              -2.45e6; //[J/Kg]
+    }
+    transport
+    {
+        mu              0.282e-3;
+        Pr              1.75;
+        kappa           0.679;
+    }
+}
+```
+
+#### thermophysicalProperties.oil
+
+Non-clarified canola oil has a boiling temperature of 107 deg C. Its thermophysical properties are the following:
+
+```
+thermoType
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState rhoConst;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+mixture
+{
+    specie
+    {
+        nMoles          1;
+        molWeight       876;
+    }
+    equationOfState
+    {
+        rho             920;
+    }
+    thermodynamics
+    {
+        Cp              1900;
+        Hf              -3.676e5; //[J/Kg]
+    }
+    transport
+    {
+        mu              65e-3;
+        Pr              130;
+    }
+}
+```
+
+### phaseProperties
+This dictionary establishes properties of interface and phase change. There are three phases and three possible combinations of two phases. For water evaporation at omderate heat fluxes, an evaporation coefficient $C = 0.1$ is appropriate. Higher values will overestimate the evaporation rate. It will be assumed that liquid nad oil are pure phases, and that the gas is a water-air mixture. The interfacial properties were obtained from the literature. Note that for the Lee model of evapration, `Tactivate` corresponds to the saturation temperature of the fluid of interest. This must be specified for each liquid phase.
+
+```
+
+type    massTransferMultiphaseSystem;
+
+phases  (liquid gas oil);
+
+liquid
+{
+    type            pureMovingPhaseModel;
+}
+
+oil
+{
+    type            pureMovingPhaseModel;
+}
+
+gas
+{
+    type            multiComponentMovingPhaseModel;
+}
+
+surfaceTension
+(
+    (gas and liquid)
+    {
+        type            constant;
+        sigma           0.07;
+    }
+    
+    (oil and liquid)
+    {
+        type            constant;
+        sigma           0.005;
+    }
+
+    (gas and oil)
+    {
+        type            constant;
+        sigma           0.07;
+    }
+);
+
+massTransferModel
+(
+    (liquid to gas)
+    {
+        type            Lee;
+        species         vapour.gas;
+        C               0.1;
+        Tactivate       373;
+    }
+    (oil to gas)
+    {
+        type            Lee;
+        species         vapour.gas;
+        C               0.1;
+        // Unrefined canola oil
+        Tactivate       380;
+    }
+);
+```
+
 
 ### system
 
@@ -80,16 +236,69 @@ Modify the default dictionary to set a liquid filling equal to 75% of the height
 
 
 ```
+defaultFieldValues
+(
+    volScalarFieldValue alpha.gas   1
+    volScalarFieldValue alpha.liquid 0
+    volScalarFieldValue alpha.oil 0
+);
+
 regions
 (
     boxToCell
     {
-        box (0 0 0) (1 1 0.09);
+        box (-1 -1 -1) (1 1 0.06);
         fieldValues
         (
             volScalarFieldValue alpha.liquid 1
             volScalarFieldValue alpha.gas    0
+            volScalarFieldValue alpha.oil    0
+        );
+    }
+
+    boxToCell
+    {
+        box (-1 -1 0.06) (1 1 0.089);
+        fieldValues
+        (
+            volScalarFieldValue alpha.oil 1
+            volScalarFieldValue alpha.gas    0
+            volScalarFieldValue alpha.liquid    0
         );
     }
 );
+
 ```
+
+#### turbulenceProperties
+Reutilise directly the file from session 2.2. We won't analyse in depth the turbulence models for multiphase mixtures, and will use $k-\epsilon$ as a default model.
+
+
+## PostProcessing
+
+### ParaView volume visualisation
+In ParaView, the fields can be visualised in several ways. The most frequent visualisation is `surface`, where the values at the surfaces of the domain, cells and subdomains are displayed. For 3-D simulations, it is useful to use the volume representation. In particular, if the field has the value 0 in a particular location, it is shown as transparent. This is useful for multiphase simulations as it allows to observe the interplay between the phases.
+
+### Slice
+Observe how the phases evolve in a representative slice at $\theta = \theta_0$. In this scenario, the azimuthal symmetry does not occur for every angle, so depending on the location of the plane you will obtain slightly different results.
+
+
+### Integrated quantities
+
+An order-of-magnitude verification test can be performed by comparing the mass flow that leaves the saucepan with the theoretical prediction of pure water evaporation:
+
+$$ \dot{m}_{e} \approx \frac{\dot{Q}}{\Delta H_{LV}} = \frac{180 W}{2.45 \times 10^6 J/kg} = 7.34 \times 10^{-5} kg/s$$
+
+You can compare this value with the water that leaves the saucepan using the following steps in ParaView:
+
+1. Create a foam.foam dummy file and open ParaView through `paraview foam.foam`
+2. Use a calculator to creata a new variables that represents the mass flux, $ \dot{m}_e = \rho v_z \omega_w \alpha_V $, based on Cell Data. Name this quantity `massflux`
+
+3. In the pipeline browser, select the boundary `top`.
+4. Execute the filter `IntegrateVariables` over the `top` boundary, based on Cell Data. Do not check the cell "divide data by cell volume". You will obtain a table with one row with the integrated properties over the boundary surface.
+5. Clic on the row produced by `IntegrateVariables` and execute the filter `Plot Data Over Time`,
+6. In the menu at the bottom left, select only `massflux` as the quantity to be ploted.
+7. Compare the values obtained at different times with the theoretical predictions. What could be the causes of the differenecs?
+
+
+

@@ -60,14 +60,14 @@ massTransferModel
     {
         type            Lee;
         species         vapour.gas;
-        C               100;
+        C               0.1;
         Tactivate       373;
     }
     (oil to gas)
     {
         type            Lee;
         species         vapour.gas;
-        C               100;
+        C               0.1;
         // Unrefined canola oil
         Tactivate       380;
     }
