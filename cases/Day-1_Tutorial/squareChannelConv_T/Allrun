@@ -3,17 +3,20 @@ cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
 
+# Create mesh
 runApplication blockMesh | tee -a log.blockMesh
 
-#\cp 0/T.orig 0/T
-
-#runApplication setFields | tee -a log.setFields
+# Decompose mesh in n number of processors
 decomposePar | tee -a log.decomposePar
 
+# Run solver either in single procesor or in n processors in parallel 
 #runApplication $(getApplication)
-mpirun -np 16 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
+mpirun -np 4 $(getApplication) -parallel | tee -a log.buoyantBoussinesqPimpleFoam
 
+# Reconstruct solution (decomposed solution can also be load in paraview)
 reconstructPar -constant | tee -a log.resconstructPar
 
+# Remove processor folders (if you reconstruct thesolution, no need to keep them)
 rm -rf processor*
+
 #------------------------------------------------------------------------------

@@ -9,29 +9,52 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      setFieldsDict;
+    class       volScalarField;
+    object      p_rgh;
 }
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-defaultFieldValues
-(
-    volScalarFieldValue T 300
-);
+dimensions      [0 2 -2 0 0 0 0];
 
-regions
-(
-    // Set patch values (using ==)
-    boxToFace
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
     {
-        box (4.5 -1000 4.5) (5.5 1e-5 5.5);
-
-        fieldValues
-        (
-            volScalarFieldValue T 600
-        );
+        // The presion BC is calculated based on the velocity BCcd
+        type            fixedFluxPressure;
     }
-);
+
+    outlet
+    {
+        type            fixedFluxPressure;
+    }
+
+    bottom
+    {
+        type            fixedFluxPressure;
+    }
+
+    heater
+    {
+        type            fixedFluxPressure;
+    }
+
+    top
+    {
+        type            fixedFluxPressure;
+    }
+
+    front
+    {
+        type            fixedFluxPressure;
+    }
+
+    back
+    {
+        type            fixedFluxPressure;
+    }
+}
 
 // ************************************************************************* //

@@ -9,55 +9,44 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+application     buoyantBoussinesqPimpleFoam;
 
-internalField   uniform (0 0 0.6);
+startFrom       latestTime;
 
-boundaryField
-{
-    inlet
-    {
-        // fixed uniform fluid velocity at the inlet of 0.1 m/s
-        type            fixedValue;
-        value           uniform (0 0 0.6);
-    }
+startTime       0;
 
-    outlet
-    {
-        // open flow at oulet which is given by a zero velocity gradient
-        type            zeroGradient;
-    }
+stopAt          endTime;
 
-    bottom
-    {
-        // 
-        type            noSlip;
-    }
+endTime         3e-1;
 
-    heater
-    {
-        type            noSlip;
-    }
+deltaT          1e-5;
 
-    top
-    {
-        type            noSlip;
-    }
+writeControl    adjustableRunTime;
 
-    front
-    {
-        type            noSlip;
-    }
+writeInterval   1e-2;
 
-    back
-    {
-        type            noSlip;
-    }
-}
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+adjustTimeStep  yes;
+
+maxCo           0.75;
 
 // ************************************************************************* //

@@ -10,43 +10,21 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
-    object      controlDict;
+    location    "constant";
+    object      turbulenceProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     buoyantBoussinesqPimpleFoam;
+simulationType laminar;
 
-startFrom       latestTime;
+RAS
+{
+    RASModel        kEpsilon;
 
-startTime       0;
+    turbulence      on;
 
-stopAt          endTime;
+    printCoeffs     on;
+}
 
-endTime         1e-1;
-
-deltaT          1e-5;
-
-writeControl    adjustableRunTime;
-
-writeInterval   0.5e-2;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-adjustTimeStep  yes;
-
-maxCo           0.75;
 
 // ************************************************************************* //

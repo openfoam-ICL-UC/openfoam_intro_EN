@@ -3,9 +3,14 @@ cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/CleanFunctions      # Tutorial clean functions
 #------------------------------------------------------------------------------
 
+# Remove time folders, but not the 0 folder
 rm -r [0-9].*
 rm -r [1-9]*
+
+# Remove processor folders
 rm -r proc*
+
+# Remove log files
 rm log.*
 
 #------------------------------------------------------------------------------

@@ -9,57 +9,54 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      p_rgh;
+    class       volVectorField;
+    object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 2 -2 0 0 0 0];
+dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform 0;
+internalField   uniform (0 0 0.5);
 
 boundaryField
 {
     inlet
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        // fixed uniform fluid velocity at the inlet of 0.1 m/s
+        type            fixedValue;
+        value           uniform (0 0 0.5);
     }
 
     outlet
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        // open flow at oulet which is given by a zero velocity gradient
+        type            zeroGradient;
     }
 
     bottom
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        // 
+        type            noSlip;
     }
 
     heater
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        type            noSlip;
     }
 
     top
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        type            noSlip;
     }
 
     front
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        type            noSlip;
     }
 
     back
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        type            noSlip;
     }
 }
 
