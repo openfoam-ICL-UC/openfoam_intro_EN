@@ -392,7 +392,9 @@ You can compare this value with the water that leaves the saucepan using the fol
 
 After running the case setup in this folder for  30 s, the flow of water vapour that leaves the sauce pan is $ \dot{m}_{out} = 7.46 \times 10^{-6}$ kg/s. The lower mass flow is expected as there are a number of heat losses in the way of the water bubbles to the interface that produce their recondensation. When the bubbles reach the oil layer, they transfer sensible and latent heat to the oil, cooling and condensing a fraction of the bubbles.
 
+Well done, you have completed the new `icoReactingMultiphaseInterFoam` tailored to Chemical Engineering and related disciplines!
 
+If you want a challenge, you can try to run the case `waterOilEvaporationHeatFluxSmall`.
 
 
 

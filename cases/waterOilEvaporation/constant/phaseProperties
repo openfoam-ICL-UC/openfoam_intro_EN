@@ -60,7 +60,7 @@ massTransferModel
     {
         type            Lee;
         species         vapour.gas;
-        C               0.1;
+        C               0.1;//0.1;
         Tactivate       373.15;
     }
     (oil to gas)
