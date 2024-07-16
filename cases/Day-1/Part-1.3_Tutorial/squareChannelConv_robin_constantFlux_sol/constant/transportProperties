@@ -24,7 +24,7 @@ nu              15.16e-6; // Pa * s;
 beta            0;
 
 // Reference temperature
-TRef            273.5;
+TRef            293;
 
 // Laminar Prandtl number
 Pr              0.73;
@@ -39,8 +39,5 @@ k               0.02514;
 
 // Convection coefficient / W / m^2 / K 
 h               25;   
-
-// Temperatura de los alrededores / K
-T_inf           300;
 
 // ************************************************************************* //

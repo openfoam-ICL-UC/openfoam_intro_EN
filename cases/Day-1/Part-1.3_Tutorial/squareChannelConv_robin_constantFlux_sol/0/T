@@ -42,16 +42,14 @@ boundaryField
         // reference value: surrounding temperature
         refValue        uniform 300;
 
-        // reference gradient = q/k_total = 1200 [W/m2] / (0.02514 + 0.0071))[W/m/K]
-        // k_total = k + kt 
-        refGradient     uniform 37221;
+        // reference gradient = q/k = 1300 [W/m2] / 0.02514 [W/m/K]
+        refGradient     uniform 51710;
 
-        // Aproximación utilizando conductividad
-        // térmica turbulenta igual a 0.0071 W/mK
-        // f = 1/(1+k_total/delta/h)
-        // delta: face-center to cell-center distance [m]
-        // h: heat transfer coefficient [W/m2-K]
-        valueFraction   uniform 0.07196;
+        // Approximtion using a turbulent thermal conductivity of 0.0071 W/mK
+        // f = 1/(1+k_total/delta/h), but in laminar regime k_total ~ k
+        // delta: half of face-center to cell-center distance [m]
+        // h: heat transfer coefficient [W/m2-K] for convective heat transfer from the surroundings to the wall
+        valueFraction   uniform 0.3321;
     }
     top
     {

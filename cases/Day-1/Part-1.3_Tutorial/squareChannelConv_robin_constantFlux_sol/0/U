@@ -16,15 +16,15 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0 0 0.3);
+internalField   uniform (0 0 0.5);
 
 boundaryField
 {
     inlet
     {
-        // fixed uniform fluid velocity at the inlet of 0.1 m/s
+        // fixed uniform fluid velocity at the inlet of 0.5 m/s
         type            fixedValue;
-        value           uniform (0 0 0.3);
+        value           uniform (0 0 0.5);
     }
 
     outlet
@@ -35,7 +35,6 @@ boundaryField
 
     bottom
     {
-        // 
         type            noSlip;
     }
 

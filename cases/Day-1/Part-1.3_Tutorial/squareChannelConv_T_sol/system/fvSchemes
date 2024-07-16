@@ -51,7 +51,6 @@ interpolationSchemes
 snGradSchemes
 {
     default         uncorrected;
-    snGrad(T)       banana;
 }
 
 

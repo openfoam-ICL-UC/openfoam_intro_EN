@@ -18,7 +18,7 @@ scale   0.001;// scales to mm
 
 vertices
 (
-    //square channle
+    // reactangular cuboid, full channel
     (0 0 0) // 0
     (2 0 0) // 1
     (2 2 0) // 2
@@ -28,7 +28,7 @@ vertices
     (2 2 30) // 6
     (0 2 30) // 7
 
-    // square section
+    // rectangular cuboid, heater section
     (0 0 6) // 8
     (2 0 6) // 9
     (2 2 6) // 10
@@ -41,8 +41,13 @@ vertices
 
 blocks
 (
+    // Block from 0 < z < 6 mm, entrance section
     hex (0 1 2 3 8 9 10 11) (20 20 30) simpleGrading (1 1 1)
+
+    // Block from 6 < z < 24 mm, heater section
     hex (8 9 10 11 12 13 14 15) (20 20 90) simpleGrading (1 1 1)
+
+    // Block from 24 < z < 30 mm, outlet section    
     hex (12 13 14 15 4 5 6 7) (20 20 30) simpleGrading (1 1 1)
 );
 
@@ -76,6 +81,7 @@ boundary
         faces
         (
             (0 1 9 8)
+            (8 9 13 12)
             (12 13 5 4)
         );
     }
@@ -85,7 +91,7 @@ boundary
         type wall;
         faces
         (
-            (8 9 13 12)
+            (11 10 14 15)
         );
     }
 
@@ -95,7 +101,6 @@ boundary
         faces
         (
             (3 2 10 11)
-            (11 10 14 15)
             (15 14 6 7)
         );
     }

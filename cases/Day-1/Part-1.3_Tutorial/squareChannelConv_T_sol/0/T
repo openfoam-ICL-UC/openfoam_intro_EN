@@ -38,7 +38,7 @@ boundaryField
     heater
     {
         type            fixedValue;
-        value           uniform 400;
+        value           uniform 304;
     }
     top
     {

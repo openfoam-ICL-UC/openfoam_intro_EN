@@ -22,43 +22,40 @@ boundaryField
 {
     inlet
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
+        // The pressure BC is calculated based on the velocity BCcd
         type            fixedFluxPressure;
+        gradient        uniform 0;
+        value           uniform 0;
     }
 
     outlet
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
-        type            fixedFluxPressure;
+        type            fixedValue;
+        value           uniform 0;
     }
 
     bottom
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
         type            fixedFluxPressure;
     }
 
     heater
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
         type            fixedFluxPressure;
     }
 
     top
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
         type            fixedFluxPressure;
     }
 
     front
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
         type            fixedFluxPressure;
     }
 
     back
     {
-        // Las CB de presión se calculan a partir de las CB de velocidad
         type            fixedFluxPressure;
     }
 }
