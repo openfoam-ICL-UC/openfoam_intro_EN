@@ -624,7 +624,7 @@ On the left panel "Properties" scroll down to "Line Parameters" and set the firs
 
 Clink "Apply" and a second window will appear with several line plots, this is initially displaying all of the variables along the $z$-coordinate:
 
-![alt text](image-1.png)
+![alt text](./Figs/image-1.png)
 
 Click on top of the line plot to activate this layout, and on the left panel "Properties", scroll down to "Series Parameters", select and de-select all of the variables first. Then only select "T" and you will see the the line temperature plot.
 
@@ -634,7 +634,7 @@ Use the "First frame" button [|<] on the top menu to go to the first time, and b
 
 Then use the play button [>] to visualise the transient temperature profile.For the case with constant wall temperature you should see:
 
-![alt text](image-2.png)
+![alt text](./Figs/image-2.png)
 
 Modify the variables selected in both "Layout #1" to "U" and in the line plot to "U_Magnitude" to visualize the velocity profile along the center of the channel.
 
@@ -644,19 +644,19 @@ First, click the `foam.foam` in the "Pipeline Browser". Then use `Ctrl + tab` an
 
 The profile that is shown is the pressure. Choose from the top menu variables "U" to see the velocity profile.
 
-![alt text](image-3.png)
+![alt text](./Figs/image-3.png)
 
 Velocity profile at 5e-3 s:
-![alt text](image-4.png)
+![alt text](./Figs/image-4.png)
 
 Velocity profile at 0.3 s:
-![alt text](image-5.png)
+![alt text](./Figs/image-5.png)
 
 You can repeat the same steps for the second simulation case that uses a constant power solar flux in the heater surface.
 
 It is also possible to compare side-by-side both simulation results by loading the two `foam.foam` files into ParaView. and using the filter `Transform` in one of them to translate it by -0.005 in the $y$-coordinate. Then you can compare the 3-D profiles and plot over lines, for example for the temperature of through the middle of the top channel wall:
 
-![alt text](image-6.png)
+![alt text](./Figs/image-6.png)
 
 ### Mean outlet temperature over time
 
@@ -668,7 +668,7 @@ Below the "Plane Parameters" in the left panel, deselect "Invert"
 
 Cick "Apply" and on the top menu slect "Surface with Edges" and click the icon "Rescale to Visible Data Range". You should see a single cell cross-sectional area of the channel: 
 
-![alt text](image-7.png)
+![alt text](./Figs/image-7.png)
 
 Select `Clip1` on the "Pipeline Browser", and add filter `IntegrateVariables`. On the left panel, select "Divide Cell Data By Volume" and clip "Apply".
 
@@ -678,7 +678,7 @@ Then select "IntegrateVariables1" on the "Pipeline Browser", and add the filter 
 
 Scroll down to the "Series Parameters" section, select and deselct all variables, and then select "T (stats)":
 
-![alt text](image-8.png)
+![alt text](./Figs/image-8.png)
 
 ### Calculate the mean Nusselt number 
 
@@ -696,7 +696,7 @@ Therefore we need to evaluate the the mean temperature of the air $T$, the wall 
 
 Load the case for with a constant heat flux on the heater into ParaView.
 
-![alt text](image-9.png)
+![alt text](./Figs/image-9.png)
 
 Mean temperature = 176.231 / 0.5957 = 295.85 K
 
