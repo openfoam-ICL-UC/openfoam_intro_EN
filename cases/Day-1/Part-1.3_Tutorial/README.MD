@@ -43,7 +43,7 @@ We will consider the following simplifications and assumptions:
 - The energy conversion efficiency of tha absorber plate is assumed to be equal to 100%. 
 - The absorber plate zone is assumed to be rectangular, covering the a centered portion of the length of the channel top wall.
 - All other channel walls are insulated, and not heat flux is present.
-- Tha channel 
+- We will not cosnidered any inclination, so we will work in an horizontal channel.
 
 Identify the relevant heater boundary and consider it as separately from the rest of the domain before building your geometry and mesh. 
 
