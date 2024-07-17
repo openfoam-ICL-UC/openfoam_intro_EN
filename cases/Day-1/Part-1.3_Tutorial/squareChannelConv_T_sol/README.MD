@@ -49,26 +49,29 @@ Identify the relevant heater boundary and consider it as separately from the res
 
 ### What would be the initial temperature?
 
-Think in realistic conditions
+We will assume an initial temperature of the air inside the channel will be equal to the its inlet temperature, which is of 20ºC. This will allow us to observe the transient period during which the air is heated inside the channel until i reaches a steady state temperature profile.
 
 ### What will be the domain?
 
-Draw it
+To produce an accurate simulation and faster solving case, we will consider a small channel of dimension 2 x 2 x 30 mm $^{3}$. While the absorber plate has dimensions of 2 x 18 mm $^{2}$ and it is centered in the top channel wall.
+
+For simplifation we will not considered any curvature in the channel, so we will build the geometry using rectangular cuboids and blockMesh.
 
 ### What is the temperature of the surroundings and temperature of the air at the inlet?
 
-Consider a day in summer, and the air cooled with respect to the ambient temperature.
+We will assume that the temperature of the surroundings is 27ºC. which will represent a hot summer day.
+
+We will assume the air enters the channel at 20ºC. This is the temperature of the air when returnes to the solar heater device at a lower temperature, after being used for an agricultural process, for example.
 
 ### What is the inlet velocity of the cold air entering the square channel, and what regime do we expect?
 
-Consider a velocity between 0.1-1 m/s. For this condition, estimate the Reynolds number to check the flow regime. 
+We will considered slow velocity of 0.5 m/s. For this condition, estimate the Reynolds number, considering a density of air of 1.204 kg m $^{-3}$, a dynamic viscosity of 18.25 $\times$ 10 $^{-6}$ Pa s, and as characteristic length the hydraulic diameter of the square channel:
 
-The hydraulic diameter is defined as 
-$$ D_h = \frac{4\times A}{P}$$
+$$ D_h = \frac{4\times A}{P} = 0.002$$
 
-The Reynolds number is defined as
-$$ Re = \frac{\rho u_{in} D_h}{\mu} $$
+$$ Re = \frac{\rho u_{in} D_h}{\mu} = \frac{1.204\times 0.5\times 0.002}{18.25e-6} = 65.97$$
 
+Therefore, we are in a laminar regime.
 
 ## Numerical model
 
@@ -92,51 +95,456 @@ We will use the blockMesh utility from OpenFOAM to build a simple mesh. Consider
 
 This two geometrical domains will define 3 rectangular cuboid to be added in the dictionary `blockMeshDict`. One at the entrance before the heater section, one under the heater section, and one at the outlet after the heater section. We recommend that you draw the geometry in piece of paper first, recognising the three sections and their vertices. 
 
+Make sure to set an appropiate scale to be used to work in mm. Define all the vertices and use them to define each one of the three cuboids in `blockMeshDict`. We will use a uniform mesh with spacing of $\Delta x = 0.1$ mm, $\Delta y = 0.1$ mm and $\Delta z = 0.2$ mm. Defne the number of cells accordingly to get these cell dimensions. 
+
+```
+scale   0.001;// scales to mm 
+
+vertices
+(
+    // reactangular cuboid, full channel
+    (0 0 0) // 0
+    (2 0 0) // 1
+    (2 2 0) // 2
+    (0 2 0) // 3
+    (0 0 30) // 4
+    (2 0 30) // 5
+    (2 2 30) // 6
+    (0 2 30) // 7
+
+    // rectangular cuboid, heater section
+    (0 0 6) // 8
+    (2 0 6) // 9
+    (2 2 6) // 10
+    (0 2 6) // 11
+    (0 0 24) // 12
+    (2 0 24) // 13
+    (2 2 24) // 14
+    (0 2 24) // 15
+);
+
+blocks
+(
+    // Block from 0 < z < 6 mm, entrance section
+    hex (0 1 2 3 8 9 10 11) (20 20 30) simpleGrading (1 1 1)
+
+    // Block from 6 < z < 24 mm, heater section
+    hex (8 9 10 11 12 13 14 15) (20 20 90) simpleGrading (1 1 1)
+
+    // Block from 24 < z < 30 mm, outlet section    
+    hex (12 13 14 15 4 5 6 7) (20 20 30) simpleGrading (1 1 1)
+);
+```
+
 Define all channel boundaries using `patch` for the inlet and outlet and `wall` for all other boundaries.
 
-You can find the [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility) utility documentation in te OpenFOAM website.
+```
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 1 2 3)
+        );
+    }
+    
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (4 5 6 7)
+        );
+    }
+
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (0 1 9 8)
+            (8 9 13 12)
+            (12 13 5 4)
+        );
+    }
+
+    heater
+    {
+        type wall;
+        faces
+        (
+            (11 10 14 15)
+        );
+    }
+
+    top
+    {
+        type wall;
+        faces
+        (
+            (3 2 10 11)
+            (15 14 6 7)
+        );
+    }
+
+    front
+    {
+        type wall;
+        faces
+        (
+            (1 9 10 2)
+            (9 13 14 10)
+            (13 5 6 14)
+        );
+    }
+
+    back
+    {
+        type wall;
+        faces
+        (
+            (0 8 11 3)
+            (8 12 15 11)
+            (12 4 7 15)
+        );
+    }
+);
+```
+
+You can the [blockMesh](https://www.openfoam.com/documentation/user-guide/4-mesh-generation-and-conversion/4.3-mesh-generation-with-the-blockmesh-utility) utility documentation in te OpenFOAM website.
 
 ### 0 Directory
 
-Set up initial and boundary conditions for:
+Since our simulation uses a laminar flow regime. We only need to set up initial and boundary conditions for:
 - p: set the pressure internalField equal to zero, p = 0 m $^2$ s $^{-2}$ (pressure over density for incompressible case), and leave all other boundary conditions as calculated.
+```
+internalField   uniform 0;
 
+boundaryField
+{
+    inlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    outlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    bottom
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    heater
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    top
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    front
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    back
+    {
+        type            calculated;
+        value           $internalField;
+    }
+}
+```
 - p_rgh: set the pressure minus the hydrostatic head to internalField equal to zero, p = 0 m $^2$ s $^{-2}$. Set the boundary conditions to:
     - inlet: as fixedFluxPressure with a gradient and value equal to zero.
     - outlet: set to a fixedValue of zero.
     - Other walls: set to fixedFluxPressure to be calculate based on the velocity boundary condition.
+```
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedFluxPressure;
+        gradient        uniform 0;
+        value           uniform 0;
+    }
+
+    outlet
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+
+    bottom
+    {
+        type            fixedFluxPressure;
+    }
+
+    heater
+    {
+        type            fixedFluxPressure;
+    }
+
+    top
+    {
+        type            fixedFluxPressure;
+    }
+
+    front
+    {
+        type            fixedFluxPressure;
+    }
+
+    back
+    {
+        type            fixedFluxPressure;
+    }
+}
+```
 
 - T: set the internal field (initial condition) to 293 K, which is equivalent to 20ºC. For the boundaries we will consider:
     - inlet: set the temperature to 293 K
     - outlet and insulated walls: use a zeroGradient boundary condition. In the case of inslated walls this means that no heat flux is present, and in the case of the outlet this means and open boundary.
     - heater: for the absorber plate we will considered two cases:
         - case 1, Dirichlet: Set the heater wall to a fixedValue of 304 K
-      
-        - case 2, Robin: Set the heater wall to a mixed boundary condition and set the values for the refValue as the surrundings temperature (300 K), the refGradient as $q/k$ and the valueFraction as $f = 1 / (1 + k/(h \delta))$
+        ```
+        internalField   uniform 293;
 
+        boundaryField
+        {
+            inlet
+            {
+                type            fixedValue;
+                value           uniform 293;
+            }
+            outlet
+            {
+                type            zeroGradient;
+            }
+            bottom
+            {
+                type            zeroGradient;
+            }
+            heater
+            {
+                type            fixedValue;
+                value           uniform 304;
+            }
+            top
+            {
+                type            zeroGradient;
+            }
+            front
+            {
+                type            zeroGradient;
+            }
+            back
+            {
+                type            zeroGradient;
+            }
+        }
+        ```
+        - case 2, Robin: Set the heater wall to a mixed boundary condition and set the values for the refValue as the surrundings temperature (300 K), the refGradient as $q/k$ and the valueFraction as $f = 1 / (1 + k/(h \delta))$
+        ```
+        internalField   uniform 293;
+
+        boundaryField
+        {
+            inlet
+            {
+                type            fixedValue;
+                value           uniform 293;
+            }
+            outlet
+            {
+                type            zeroGradient;
+            }
+            bottom
+            {
+                type            zeroGradient;
+            }
+            heater
+            {
+                type            mixed;
+
+                // reference value: surrounding temperature
+                refValue        uniform 300;
+
+                // reference gradient = q/k = 1300 [W/m2] / 0.02514 [W/m/K]
+                refGradient     uniform 51710;
+
+                // Approximtion using a turbulent thermal conductivity of 0.0071 W/mK
+                // f = 1/(1+k_total/delta/h), but in laminar regime k_total ~ k
+                // delta: half of face-center to cell-center distance [m]
+                // h: heat transfer coefficient [W/m2-K] for convective heat transfer from the surroundings to the wall
+                valueFraction   uniform 0.3321;
+            }
+            top
+            {
+                type            zeroGradient;
+            }
+            front
+            {
+                type            zeroGradient;
+            }
+            back
+            {
+                type            zeroGradient;
+            }
+        }
+        ```
 - U: set the internal field (initial condition) to 0.5 m s $^{-1}$. For the boundaries we will consider:
     - inlet: set the velocity to a fixedValue of 0.5 m s $^{-1}$.
     - outlet: consider it as open flow with zeroGradient.
     - other boundaries: set all other channels walls as as noSlip.
+```
+internalField   uniform (0 0 0.5);
+
+boundaryField
+{
+    inlet
+    {
+        // fixed uniform fluid velocity at the inlet of 0.1 m/s
+        type            fixedValue;
+        value           uniform (0 0 0.5);
+    }
+
+    outlet
+    {
+        // open flow at outlet which is given by a zero velocity gradient
+        type            zeroGradient;
+    }
+
+    bottom
+    {
+        // 
+        type            noSlip;
+    }
+
+    heater
+    {
+        type            noSlip;
+    }
+
+    top
+    {
+        type            noSlip;
+    }
+
+    front
+    {
+        type            noSlip;
+    }
+
+    back
+    {
+        type            noSlip;
+    }
+}
+```
 
 ### constant
 
 #### g 
 
+Make sure the gravity value is correct and is pointing downwards in the $y$-coordinate
+```
+dimensions      [0 1 -2 0 0 0 0];
+value           (0 -9.81 0);
+```
 #### transportProperties
-
 We will use a incompressible Newtonian viscosity model.
 Modify the properties to use the values for air
 
+```
+transportModel Newtonian;
+
+// Laminar viscosity of air / Pa * s
+nu              15.16e-6; 
+
+// Thermal expansion coefficient / 1/K
+beta            3e-3; 
+
+// Reference temperature
+TRef            293; 
+
+// Laminar Prandtl number
+Pr              0.73;
+
+// Turbulent Prandtl number
+Prt             0.85;
+
+// Additional parameters
+
+// Thermal conductivity / W/m/K
+k               0.02514;
+
+// Convection coefficient / W / m^2 / K 
+h               25;   
+
+```
 
 #### turbulenceProperties
-Modify the dictionary to consider an appropriate model for the flow regime.
+Modify the dictionary to cnsider a laminar case
 
+```
+simulationType laminar;
+```
 ### system
 
 #### controlDict
 We will run the simulation for 0.3 s saving results each 0.01 s. Start with a
 small time step of 1e-7 s and allow for a adjustTimeStep and a maxCo of 0.75.
+
+```
+application     buoyantBoussinesqPimpleFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         3e-1;
+
+deltaT          1e-7;
+
+writeControl    adjustableRunTime;
+
+writeInterval   1e-2;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+adjustTimeStep  yes;
+
+maxCo           0.75;
+```
 
 ### fvSchemes and fvSolution
 We will keep the same settings that we used in our previous example `tubeConv`. Copy the `fvSchemes` and `fvSolution` form that case to the system folder
