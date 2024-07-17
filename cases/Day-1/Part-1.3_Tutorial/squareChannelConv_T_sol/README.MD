@@ -612,7 +612,7 @@ Launch ParaView and load foam.foam:
 
 After you launch ParaView, you will not see any geometry. Click on "Apply" on the left panel to see the square channel:
 
-![alt text](image.png)
+![alt text](../Figs/image.png)
 
 To add a `PlotOverLine` you can either do right click on `foam.foam` in the "Pipeline Browser", then select "Add Filter" and then select "PlotOverLine".
 
