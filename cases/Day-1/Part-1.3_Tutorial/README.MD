@@ -9,7 +9,7 @@ This folder contains the solution for two cases:
 
 We encourage you to try to develop the tutorial on your own and make use of this cases as supporting material if needed.
 
-You can use the tubeConv case we review in Part-1.2 as a reference as well.
+You can use the tubeConv case we reviewed in Part-1.2 as a reference as well.
 
 ## Set up a new case folder
 
