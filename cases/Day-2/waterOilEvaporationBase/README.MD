@@ -12,29 +12,15 @@ Consider a cylindrical saucepan with internal diameter $d_i = 0.118$ m and heigh
 ## Physical model
 
 ### How is the saucepan being heated? 
-The saucepan will be heated by the base through a modern electric hub. This will provide a fixed heat flux prescribed from realistic values and geometry. For the purpose of scaling, we will consider the [Kogan Induction Cooktop](https://www.kogan.com/au/buy/kogan-induction-cooktop/?utm_source=google&utm_medium=product_listing_ads&gad_source=1&gclid=EAIaIQobChMIi7vvlPWihwMV9aJmAh0YZgdREAQYASABEgLgd_D_BwE). The power of the four cooking zone is 7200 W. Each cooking zone has a diameter of 11.8 cm. We will consider the following assumptions:
-- The energy conversion efficiency from electric power to heat is assumed to be equal to 100%.
-- The heating power corresponds to 10% of the nominal power of the cooktop. The nominal power of the cooktop is calculated through dividing the power that one heater uses over the area of the heater:
-
-$$ \dot{q} = \frac{\dot{Q}}{A} = \frac{(7200/4) \text{W}}{\pi (0.15m)^2/4} = 101.859 \hspace{0.1cm} \text{kW}/\text{m}^2$$
-
-- The cooking zone is assumed to be a circle, and the totality of the area is active for heating.
-- The saucepan walls are thermally insulated
-
-
-Identify the relevant boundary and consider it as separately from the rest of the domain before building your geometry and mesh. 
+Look at the literature or comercial data for cook-tops and estimate a temperature superheating or heat flux. List your assumptions. Identify the boundaries of the system.
 
 ### What would be the initial temperature?
 
-We will assume an initial temperature of the liquid mixture of 80ºC. This choice allows to observe a short transient period of liquid heating, and then to observe the ongoing of the evaporation.
+Multiphase simulations tend to be slow. We suggest you to start with liquid water at its boiling point at atmospheric pressure, $ T|_{t=0} = 373.15 K$. This choice allows to observe a short transient period of superheating for the onset of the evaporation.
 
 ### What will be the domain?
 
-To produce an accurate simulation, we will consider a small saucepan. We will consider the standard of [stellar.co.uk](https://stellar.co.uk/knowledge-base/what-are-the-full-dimensions-of-the-pans):
-
-$$ d_i = 0.118 \hspace{0.1cm} \text{m}, H = 0.12 \hspace{0.1cm} \text{m} $$
-
-Note that for these dimensions, we just used the base diameter. In reality, a saucepan diameter is larger than the base diameter and it has a small curvature near the base. This would require a complex geometry that will go beyond the scope of this exercise.
+Choose the smallest possible saucepan and register its internal diameter and height. Model the saucepan as a vertical cylinder to simplify mesh generation. 
 
 ### What is the temperature of the surroundings?
 
