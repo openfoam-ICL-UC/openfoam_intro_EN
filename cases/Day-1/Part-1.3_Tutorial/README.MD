@@ -53,7 +53,7 @@ Think in realistic conditions
 
 ### What will be the domain?
 
-Draw it
+Check the drawing on the presented slides or you can also draw it yourself.
 
 ### What is the temperature of the surroundings and temperature of the air at the inlet?
 
